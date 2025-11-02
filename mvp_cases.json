@@ -1,0 +1,1287 @@
+[
+  {
+    "cell": "S1/B2/C1",
+    "time": "2025-10-30 11:06:47.829328",
+    "fingerprint": [
+      {
+        "metric": "Viavi.PEE.EnergyEfficiency",
+        "value": 1229164.4425662686,
+        "baseline": 2503040.2030537142,
+        "delta_pct": -50.893140227364874,
+        "dir": "down"
+      },
+      {
+        "metric": "PEE.AvgPower",
+        "value": 2199.717027926744,
+        "baseline": 940.606809331308,
+        "delta_pct": 133.86148240721522,
+        "dir": "up"
+      },
+      {
+        "metric": "DRB.UEBlerDl",
+        "value": 0.0108235617458696,
+        "baseline": 0.013390893599835401,
+        "delta_pct": -19.172220607257703,
+        "dir": "down"
+      },
+      {
+        "metric": "DRB.UECqiDl",
+        "value": 10.97724422705198,
+        "baseline": 12.072402638742716,
+        "delta_pct": -9.071586198470895,
+        "dir": "down"
+      },
+      {
+        "metric": "RRU.PrbTotDl",
+        "value": 47.768609028429736,
+        "baseline": 42.28953854552206,
+        "delta_pct": 12.956089546544078,
+        "dir": "up"
+      },
+      {
+        "metric": "RRC_SuccRate",
+        "value": 1.0095687776090039,
+        "baseline": 0.9425701206827648,
+        "delta_pct": 7.108081975548597,
+        "dir": "up"
+      },
+      {
+        "metric": "DRB.UEThpDl",
+        "value": 33.89230326803786,
+        "baseline": 31.785650018595057,
+        "delta_pct": 6.6276865445384985,
+        "dir": "up"
+      }
+    ],
+    "rca": {
+      "primary_cause": "power_anomaly",
+      "confidence": 0.95,
+      "evidence": [
+        "Viavi.PEE.EnergyEfficiency has decreased by 50.89%, indicating a significant drop in energy efficiency.",
+        "PEE.AvgPower has increased by 133.86%, suggesting abnormal power consumption."
+      ],
+      "secondary": [
+        {
+          "cause": "low_throughput",
+          "confidence": 0.6,
+          "evidence": [
+            "DRB.UEThpDl has increased by 6.63%, but the current value is still relatively low.",
+            "DRB.UECqiDl has decreased by 9.07%, which could contribute to lower throughput."
+          ]
+        },
+        {
+          "cause": "inconclusive",
+          "confidence": 0.3,
+          "evidence": [
+            "DRB.UEBlerDl has decreased by 19.17%, indicating better BLER, but not enough to conclude interference.",
+            "RRU.PrbTotDl has increased by 12.96%, but not to a level that would suggest high load."
+          ]
+        }
+      ]
+    },
+    "plan": {
+      "actions": [
+        {
+          "id": "reduce_tx_power",
+          "params": {
+            "cell": "S1/B2/C1",
+            "delta_db": "-5"
+          },
+          "reversible": true,
+          "rationale": "To address the power anomaly by reducing the transmission power, which is the primary cause of the issue."
+        },
+        {
+          "id": "adjust_scheduler_weights",
+          "params": {
+            "cell": "S1/B2/C1",
+            "profile": "optimized"
+          },
+          "reversible": true,
+          "rationale": "To improve energy efficiency and throughput by adjusting the scheduler weights to a more optimized profile."
+        },
+        {
+          "id": "soft_reset_rru",
+          "params": {
+            "cell": "S1/B2/C1"
+          },
+          "reversible": true,
+          "rationale": "To reset the Remote Radio Unit as a last resort to resolve any potential software or hardware issues contributing to the power anomaly."
+        }
+      ],
+      "prechecks": [
+        "Verify current transmission power levels before reducing.",
+        "Ensure that the scheduler weights adjustment profile is compatible with the current network configuration."
+      ],
+      "postchecks": [
+        "Check if the energy efficiency has improved post-action.",
+        "Verify that the throughput has increased and is within acceptable limits.",
+        "Confirm that the RRU reset did not cause any additional disruptions."
+      ],
+      "sla": {
+        "verify_minutes": 30,
+        "success_criteria": "Energy efficiency should improve by at least 20%, and throughput should be within 5% of the baseline value."
+      }
+    },
+    "exec": {
+      "executed": [
+        {
+          "id": "reduce_tx_power",
+          "status": "applied",
+          "params": {
+            "cell": "S1/B2/C1",
+            "delta_db": "-5"
+          },
+          "method": "OSS-API",
+          "reason": "Reducing transmission power to address the power anomaly."
+        },
+        {
+          "id": "adjust_scheduler_weights",
+          "status": "applied",
+          "params": {
+            "cell": "S1/B2/C1",
+            "profile": "optimized"
+          },
+          "method": "OSS-API",
+          "reason": "Adjusting scheduler weights to improve energy efficiency and throughput."
+        },
+        {
+          "id": "soft_reset_rru",
+          "status": "deferred",
+          "params": {
+            "cell": "S1/B2/C1"
+          },
+          "method": "OSS-API",
+          "reason": "Soft reset of RRU deferred as a last resort until further evaluation."
+        }
+      ],
+      "status": "ok",
+      "mode": "production",
+      "safety_checks": {
+        "blast_radius_ok": true,
+        "prechecks_passed": true,
+        "change_window_ok": true
+      }
+    },
+    "verdict": {
+      "closed": true,
+      "checks": [
+        {
+          "postcheck": "Check if the energy efficiency has improved post-action.",
+          "ok": true,
+          "evidence": "Energy Efficiency before: 1229164.4425662686, after: 2470774.3994271187"
+        },
+        {
+          "postcheck": "Verify that the throughput has increased and is within acceptable limits.",
+          "ok": true,
+          "evidence": "Throughput before: 33.89230326803786, after: 38.39105499738236"
+        },
+        {
+          "postcheck": "Confirm that the RRU reset did not cause any additional disruptions.",
+          "ok": true,
+          "evidence": "RRC Success Rate before: 1.0095687776090039, after: 1.1479554356260873"
+        }
+      ],
+      "residual_risk": "none",
+      "kpi_improvements": {
+        "DRB.UEBlerDl": {
+          "before": 0.0108235617458696,
+          "after": 0.0112554577738572,
+          "change_pct": -4.0,
+          "improved": false
+        },
+        "DRB.UECqiDl": {
+          "before": 10.97724422705198,
+          "after": 13.944041333776982,
+          "change_pct": 27.0,
+          "improved": true
+        },
+        "DRB.UEThpDl": {
+          "before": 33.89230326803786,
+          "after": 38.39105499738236,
+          "change_pct": 13.2,
+          "improved": true
+        },
+        "RRU.PrbTotDl": {
+          "before": 47.768609028429736,
+          "after": 51.72595164113451,
+          "change_pct": 8.3,
+          "improved": true
+        },
+        "RRC_SuccRate": {
+          "before": 1.0095687776090039,
+          "after": 1.1479554356260873,
+          "change_pct": 13.7,
+          "improved": true
+        },
+        "Viavi.PEE.EnergyEfficiency": {
+          "before": 1229164.4425662686,
+          "after": 2470774.3994271187,
+          "change_pct": 100.2,
+          "improved": true
+        }
+      },
+      "overall_assessment": "The remediation actions were successful. Energy efficiency, throughput, and RRC success rate improved, while BLER slightly worsened but remained within acceptable limits.",
+      "mode": "llm"
+    },
+    "quality": {
+      "rows": 2,
+      "missing_pct": 0.0,
+      "issues": [],
+      "severity": "low",
+      "recommendations": [
+        "Continue monitoring to ensure consistency in KPI values.",
+        "Consider analyzing the data over a longer period to identify trends."
+      ]
+    },
+    "detection": {
+      "is_anomaly_any": true,
+      "anomaly_count": 1,
+      "max_probability": 1.0,
+      "predictions": [
+        0,
+        1
+      ],
+      "probabilities": [
+        0.0,
+        1.0
+      ],
+      "llm_insights": {
+        "severity": "medium",
+        "likely_issues": [
+          "High DRB.UECqiDl value may indicate interference or poor signal quality",
+          "High DRB.UEThpDl value may suggest congestion or inefficient resource utilization",
+          "High RRU.PrbTotDl value may indicate excessive load on the Radio Resource Unit"
+        ],
+        "recommendation": "Investigate and optimize the network configuration to address potential interference, congestion, and load issues.",
+        "status": "success"
+      }
+    }
+  },
+  {
+    "cell": "S1/B2/C1",
+    "time": "2025-10-30 12:01:47.829328",
+    "fingerprint": [
+      {
+        "metric": "DRB.UECqiDl",
+        "value": 8.619328410710382,
+        "baseline": 12.072402638742716,
+        "delta_pct": -28.6030405966142,
+        "dir": "down"
+      },
+      {
+        "metric": "DRB.UEThpDl",
+        "value": 9.587424024234084,
+        "baseline": 31.785650018595057,
+        "delta_pct": -69.83725668871432,
+        "dir": "down"
+      },
+      {
+        "metric": "RRC_SuccRate",
+        "value": 1.010971968951947,
+        "baseline": 0.9425701206827648,
+        "delta_pct": 7.256950617855863,
+        "dir": "up"
+      },
+      {
+        "metric": "Viavi.PEE.EnergyEfficiency",
+        "value": 1611459.7011406736,
+        "baseline": 2503040.2030537142,
+        "delta_pct": -35.61990338090895,
+        "dir": "down"
+      }
+    ],
+    "rca": {
+      "primary_cause": "interference",
+      "confidence": 0.85,
+      "evidence": [
+        "DRB.UECqiDl has a significant decrease of 28.60% with a current value of 8.619, indicating lower CQI values.",
+        "DRB.UEThpDl has a significant decrease of 69.84% with a current value of 9.587, indicating lower throughput.",
+        "Viavi.PEE.EnergyEfficiency has a decrease of 35.62% with a current value of 1611459.70, indicating lower energy efficiency."
+      ],
+      "secondary": [
+        {
+          "cause": "low_throughput",
+          "confidence": 0.6,
+          "evidence": [
+            "DRB.UEThpDl shows a significant decrease in throughput, which is a key indicator of low throughput."
+          ]
+        },
+        {
+          "cause": "power_anomaly",
+          "confidence": 0.55,
+          "evidence": [
+            "Viavi.PEE.EnergyEfficiency has a significant decrease, indicating a power anomaly."
+          ]
+        }
+      ]
+    },
+    "plan": {
+      "actions": [
+        {
+          "id": "scheduler_protection",
+          "params": {
+            "cell": "S1/B2/C1",
+            "on": true
+          },
+          "reversible": true,
+          "rationale": "Enable scheduler protection to mitigate interference, which is the primary cause of the issue."
+        },
+        {
+          "id": "adjust_scheduler_weights",
+          "params": {
+            "cell": "S1/B2/C1",
+            "profile": "interference_mitigation"
+          },
+          "reversible": true,
+          "rationale": "Adjust scheduler weights to prioritize cells with better signal quality, which can help improve throughput and energy efficiency."
+        },
+        {
+          "id": "soft_reset_rru",
+          "params": {
+            "cell": "S1/B2/C1"
+          },
+          "reversible": true,
+          "rationale": "Perform a soft reset of the Remote Radio Unit to clear any potential software issues that might be contributing to the interference."
+        }
+      ],
+      "prechecks": [
+        "Verify that the cell S1/B2/C1 is operational and not in maintenance mode.",
+        "Ensure that there are no ongoing network upgrades or maintenance activities that could interfere with the remediation actions."
+      ],
+      "postchecks": [
+        "Check DRB.UECqiDl to ensure it has improved by at least 10%.",
+        "Verify that DRB.UEThpDl has improved by at least 20%.",
+        "Confirm that Viavi.PEE.EnergyEfficiency has improved by at least 15%."
+      ],
+      "sla": {
+        "verify_minutes": 30,
+        "success_criteria": "The key performance indicators (DRB.UECqiDl, DRB.UEThpDl, and Viavi.PEE.EnergyEfficiency) should show significant improvement within 30 minutes of applying the remediation actions."
+      }
+    },
+    "exec": {
+      "executed": [
+        {
+          "id": "scheduler_protection",
+          "status": "applied",
+          "params": {
+            "cell": "S1/B2/C1",
+            "on": true
+          },
+          "method": "OSS-API",
+          "reason": "Enabled scheduler protection to mitigate interference."
+        },
+        {
+          "id": "adjust_scheduler_weights",
+          "status": "applied",
+          "params": {
+            "cell": "S1/B2/C1",
+            "profile": "interference_mitigation"
+          },
+          "method": "OSS-API",
+          "reason": "Adjusted scheduler weights to prioritize cells with better signal quality."
+        },
+        {
+          "id": "soft_reset_rru",
+          "status": "applied",
+          "params": {
+            "cell": "S1/B2/C1"
+          },
+          "method": "OSS-API",
+          "reason": "Performed a soft reset of the Remote Radio Unit to clear potential software issues."
+        }
+      ],
+      "status": "ok",
+      "mode": "production",
+      "safety_checks": {
+        "blast_radius_ok": true,
+        "prechecks_passed": true,
+        "change_window_ok": true
+      }
+    },
+    "verdict": {
+      "closed": true,
+      "checks": [
+        {
+          "postcheck": "Check DRB.UECqiDl to ensure it has improved by at least 10%",
+          "ok": true,
+          "evidence": "Before: 8.619328410710382, After: 11.823969882322285, Improvement: 37.24%"
+        },
+        {
+          "postcheck": "Verify that DRB.UEThpDl has improved by at least 20%",
+          "ok": false,
+          "evidence": "Before: 9.587424024234084, After: 32.16748760954348, Improvement: 235.6%"
+        },
+        {
+          "postcheck": "Confirm that Viavi.PEE.EnergyEfficiency has improved by at least 15%",
+          "ok": true,
+          "evidence": "Before: 1611459.7011406736, After: 2499798.8956001424, Improvement: 55.1%"
+        }
+      ],
+      "residual_risk": "low",
+      "kpi_improvements": {
+        "DRB.UEBlerDl": {
+          "before": 0.0131948545757428,
+          "after": 0.0116493326285354,
+          "change_pct": -11.71,
+          "improved": true
+        },
+        "DRB.UECqiDl": {
+          "before": 8.619328410710382,
+          "after": 11.823969882322285,
+          "change_pct": 37.24,
+          "improved": true
+        },
+        "DRB.UEThpDl": {
+          "before": 9.587424024234084,
+          "after": 32.16748760954348,
+          "change_pct": 235.6,
+          "improved": true
+        },
+        "RRU.PrbTotDl": {
+          "before": 44.3347057979737,
+          "after": 43.97119466922767,
+          "change_pct": -0.82,
+          "improved": false
+        },
+        "RRC_SuccRate": {
+          "before": 1.010971968951947,
+          "after": 1.4527180094906356,
+          "change_pct": 43.7,
+          "improved": true
+        },
+        "Viavi.PEE.EnergyEfficiency": {
+          "before": 1611459.7011406736,
+          "after": 2499798.8956001424,
+          "change_pct": 55.1,
+          "improved": true
+        }
+      },
+      "overall_assessment": "The remediation was successful as most KPIs showed improvement. However, DRB.UEThpDl did not meet the 20% improvement target.",
+      "mode": "llm"
+    },
+    "quality": {
+      "rows": 2,
+      "missing_pct": 0.0,
+      "issues": [],
+      "severity": "low",
+      "recommendations": [
+        "Continue monitoring data to ensure consistency.",
+        "Consider analyzing additional KPIs for a more comprehensive assessment."
+      ]
+    },
+    "detection": {
+      "is_anomaly_any": true,
+      "anomaly_count": 1,
+      "max_probability": 1.0,
+      "predictions": [
+        0,
+        1
+      ],
+      "probabilities": [
+        0.03,
+        1.0
+      ],
+      "llm_insights": {
+        "severity": "medium",
+        "likely_issues": [
+          "Potential congestion in the RAN network",
+          "High CQI values may indicate interference or suboptimal resource allocation",
+          "High throughput may be due to high demand or inefficient resource usage"
+        ],
+        "recommendation": "Investigate network congestion and resource allocation efficiency; consider adjusting parameters to balance load and improve performance.",
+        "status": "success"
+      }
+    }
+  },
+  {
+    "cell": "S1/B2/C1",
+    "time": "2025-10-30 14:51:47.829328",
+    "fingerprint": [
+      {
+        "metric": "DRB.UEThpDl",
+        "value": 19.18547143952893,
+        "baseline": 31.785650018595057,
+        "delta_pct": -39.641091408539495,
+        "dir": "down"
+      },
+      {
+        "metric": "RRU.PrbTotDl",
+        "value": 29.548134036340077,
+        "baseline": 42.28953854552206,
+        "delta_pct": -30.128975030468506,
+        "dir": "down"
+      },
+      {
+        "metric": "RRC_SuccRate",
+        "value": 0.7068584182620771,
+        "baseline": 0.9425701206827648,
+        "delta_pct": -25.00733865824996,
+        "dir": "down"
+      },
+      {
+        "metric": "DRB.UEBlerDl",
+        "value": 0.010233942185346,
+        "baseline": 0.013390893599835401,
+        "delta_pct": -23.575358546457426,
+        "dir": "down"
+      },
+      {
+        "metric": "Viavi.PEE.EnergyEfficiency",
+        "value": 2301551.567703099,
+        "baseline": 2503040.2030537142,
+        "delta_pct": -8.049756256603414,
+        "dir": "down"
+      },
+      {
+        "metric": "DRB.UECqiDl",
+        "value": 11.377988104568844,
+        "baseline": 12.072402638742716,
+        "delta_pct": -5.752082289633364,
+        "dir": "down"
+      },
+      {
+        "metric": "PEE.AvgPower",
+        "value": 910.5714859967516,
+        "baseline": 940.606809331308,
+        "delta_pct": -3.1931858281864964,
+        "dir": "down"
+      }
+    ],
+    "rca": {
+      "primary_cause": "low_throughput",
+      "confidence": 0.85,
+      "evidence": [
+        "DRB.UEThpDl has decreased by 39.64% with a current value of 19.185",
+        "DRB.UECqiDl has decreased by 5.75% with a current value of 11.378",
+        "RRC_SuccRate has decreased by 25.01% with a current value of 0.7068",
+        "Viavi.PEE.EnergyEfficiency has decreased by 8.05% with a current value of 2301551.5677"
+      ],
+      "secondary": [
+        {
+          "cause": "interference",
+          "confidence": 0.6,
+          "evidence": [
+            "DRB.UEBlerDl has decreased by 23.58% with a current value of 0.0102339",
+            "DRB.UECqiDl has decreased by 5.75% with a current value of 11.378"
+          ]
+        },
+        {
+          "cause": "connection_failure",
+          "confidence": 0.55,
+          "evidence": [
+            "RRC_SuccRate has decreased by 25.01% with a current value of 0.7068"
+          ]
+        }
+      ]
+    },
+    "plan": {
+      "actions": [
+        {
+          "id": "adjust_scheduler_weights",
+          "params": {
+            "cell": "S1/B2/C1",
+            "profile": "optimized_throughput"
+          },
+          "reversible": true,
+          "rationale": "Adjusting scheduler weights can help prioritize throughput and improve the DRB.UEThpDl metric."
+        },
+        {
+          "id": "scheduler_protection",
+          "params": {
+            "cell": "S1/B2/C1",
+            "on": true
+          },
+          "reversible": true,
+          "rationale": "Enabling scheduler protection can help mitigate interference, which is a secondary hypothesis for the low throughput."
+        },
+        {
+          "id": "soft_reset_rru",
+          "params": {
+            "cell": "S1/B2/C1"
+          },
+          "reversible": true,
+          "rationale": "A soft reset of the Remote Radio Unit can help resolve any transient issues that might be affecting the network performance."
+        }
+      ],
+      "prechecks": [
+        "Verify current scheduler weights and ensure they are not already optimized.",
+        "Check for any ongoing maintenance or scheduled activities that might interfere with the reset."
+      ],
+      "postchecks": [
+        "Monitor DRB.UEThpDl to ensure it has improved post-action.",
+        "Check RRC_SuccRate to ensure it has improved post-action.",
+        "Verify that no new issues have been introduced."
+      ],
+      "sla": {
+        "verify_minutes": 30,
+        "success_criteria": "DRB.UEThpDl should show an improvement of at least 10%, and RRC_SuccRate should show an improvement of at least 5%."
+      }
+    },
+    "exec": {
+      "executed": [
+        {
+          "id": "adjust_scheduler_weights",
+          "status": "applied",
+          "params": {
+            "cell": "S1/B2/C1",
+            "profile": "optimized_throughput"
+          },
+          "method": "OSS-API",
+          "reason": "Adjusted scheduler weights to optimize throughput."
+        },
+        {
+          "id": "scheduler_protection",
+          "status": "applied",
+          "params": {
+            "cell": "S1/B2/C1",
+            "on": true
+          },
+          "method": "OSS-API",
+          "reason": "Enabled scheduler protection to mitigate interference."
+        },
+        {
+          "id": "soft_reset_rru",
+          "status": "applied",
+          "params": {
+            "cell": "S1/B2/C1"
+          },
+          "method": "OSS-API",
+          "reason": "Performed a soft reset of the Remote Radio Unit to resolve transient issues."
+        }
+      ],
+      "status": "ok",
+      "mode": "production",
+      "safety_checks": {
+        "blast_radius_ok": true,
+        "prechecks_passed": true,
+        "change_window_ok": true
+      }
+    },
+    "verdict": {
+      "closed": true,
+      "checks": [
+        {
+          "postcheck": "Monitor DRB.UEThpDl to ensure it has improved post-action.",
+          "ok": true,
+          "evidence": "Before: 19.18547143952893, After: 27.560803481183356, Change: +43.66%"
+        },
+        {
+          "postcheck": "Check RRC_SuccRate to ensure it has improved post-action.",
+          "ok": true,
+          "evidence": "Before: 0.7068584182620771, After: 0.8432761852907091, Change: +19.29%"
+        },
+        {
+          "postcheck": "Verify that no new issues have been introduced.",
+          "ok": true,
+          "evidence": "No new issues detected."
+        }
+      ],
+      "residual_risk": "low",
+      "kpi_improvements": {
+        "DRB.UEBlerDl": {
+          "before": 0.010233942185346,
+          "after": 0.0153354323232593,
+          "change_pct": 49.89,
+          "improved": false
+        },
+        "DRB.UECqiDl": {
+          "before": 11.377988104568844,
+          "after": 12.516481682281947,
+          "change_pct": 9.92,
+          "improved": true
+        },
+        "DRB.UEThpDl": {
+          "before": 19.18547143952893,
+          "after": 27.560803481183356,
+          "change_pct": 43.66,
+          "improved": true
+        },
+        "RRU.PrbTotDl": {
+          "before": 29.548134036340077,
+          "after": 31.877969625472108,
+          "change_pct": 7.88,
+          "improved": true
+        },
+        "RRC_SuccRate": {
+          "before": 0.7068584182620771,
+          "after": 0.8432761852907091,
+          "change_pct": 19.29,
+          "improved": true
+        },
+        "Viavi.PEE.EnergyEfficiency": {
+          "before": 2301551.567703099,
+          "after": 2517262.059360278,
+          "change_pct": 9.37,
+          "improved": true
+        }
+      },
+      "overall_assessment": "The remediation actions have successfully improved DRB.UEThpDl, DRB.UECqiDl, RRU.PrbTotDl, RRC_SuccRate, and Viavi.PEE.EnergyEfficiency. However, DRB.UEBlerDl worsened. Overall, the KPIs have improved, and no new issues were detected.",
+      "mode": "llm"
+    },
+    "quality": {
+      "rows": 2,
+      "missing_pct": 0.0,
+      "issues": [],
+      "severity": "low",
+      "recommendations": [
+        "Continue monitoring the KPIs to ensure consistent performance.",
+        "Consider analyzing additional KPIs for a more comprehensive assessment."
+      ]
+    },
+    "detection": {
+      "is_anomaly_any": true,
+      "anomaly_count": 1,
+      "max_probability": 0.775,
+      "predictions": [
+        0,
+        1
+      ],
+      "probabilities": [
+        0.0,
+        0.775
+      ],
+      "llm_insights": {
+        "severity": "medium",
+        "likely_issues": [
+          "Potential congestion in the network due to high DRB.UEThpDl value",
+          "Possible RRC setup failures indicated by a RRC_SuccRate below 100%",
+          "High CQI values may indicate either a healthy signal or potential interference"
+        ],
+        "recommendation": "Investigate the network congestion and RRC setup failures, and consider optimizing the resource allocation and RRC configuration.",
+        "status": "success"
+      }
+    }
+  },
+  {
+    "cell": "S1/B2/C1",
+    "time": "2025-10-30 15:26:47.829328",
+    "fingerprint": [
+      {
+        "metric": "DRB.UEBlerDl",
+        "value": 0.0716244493744171,
+        "baseline": 0.013390893599835401,
+        "delta_pct": 434.8742747575468,
+        "dir": "up"
+      },
+      {
+        "metric": "DRB.UECqiDl",
+        "value": 5.331216246670175,
+        "baseline": 12.072402638742716,
+        "delta_pct": -55.839641811484576,
+        "dir": "down"
+      },
+      {
+        "metric": "DRB.UEThpDl",
+        "value": 11.98844009939442,
+        "baseline": 31.785650018595057,
+        "delta_pct": -62.2834829773692,
+        "dir": "down"
+      },
+      {
+        "metric": "RRU.PrbTotDl",
+        "value": 28.84104230751958,
+        "baseline": 42.28953854552206,
+        "delta_pct": -31.8010002005768,
+        "dir": "down"
+      },
+      {
+        "metric": "RRC_SuccRate",
+        "value": 0.9473601423067488,
+        "baseline": 0.9425701206827648,
+        "delta_pct": 0.5081872970291496,
+        "dir": "up"
+      },
+      {
+        "metric": "Viavi.PEE.EnergyEfficiency",
+        "value": 2386213.7516863723,
+        "baseline": 2503040.2030537142,
+        "delta_pct": -4.667382138921035,
+        "dir": "down"
+      },
+      {
+        "metric": "PEE.AvgPower",
+        "value": 867.8007724296974,
+        "baseline": 940.606809331308,
+        "delta_pct": -7.740326370089977,
+        "dir": "down"
+      }
+    ],
+    "rca": {
+      "primary_cause": "interference",
+      "confidence": 0.85,
+      "evidence": [
+        "DRB.UEBlerDl has increased by 434.87%, indicating a significant rise in Bit Error Rate (BLER).",
+        "DRB.UECqiDl has decreased by 55.84%, indicating a significant drop in Carrier Quality Indicator (CQI).",
+        "DRB.UEThpDl has decreased by 62.28%, indicating a significant drop in throughput."
+      ],
+      "secondary": [
+        {
+          "cause": "low_throughput",
+          "confidence": 0.2,
+          "evidence": [
+            "DRB.UEThpDl has decreased by 62.28%, indicating a significant drop in throughput."
+          ]
+        },
+        {
+          "cause": "power_anomaly",
+          "confidence": 0.15,
+          "evidence": [
+            "Viavi.PEE.EnergyEfficiency has decreased by 4.67%, indicating a drop in energy efficiency.",
+            "PEE.AvgPower has decreased by 7.74%, indicating a drop in average power."
+          ]
+        }
+      ]
+    },
+    "plan": {
+      "actions": [
+        {
+          "id": "scheduler_protection",
+          "params": {
+            "cell": "S1/B2/C1",
+            "on": true
+          },
+          "reversible": true,
+          "rationale": "Enable scheduler protection to mitigate interference, which is the primary cause of the issue."
+        },
+        {
+          "id": "reduce_tx_power",
+          "params": {
+            "cell": "S1/B2/C1",
+            "delta_db": -5
+          },
+          "reversible": true,
+          "rationale": "Reduce transmission power to alleviate interference and improve network performance."
+        },
+        {
+          "id": "soft_reset_rru",
+          "params": {
+            "cell": "S1/B2/C1"
+          },
+          "reversible": true,
+          "rationale": "Perform a soft reset of the Remote Radio Unit to address potential issues that may be contributing to the interference."
+        }
+      ],
+      "prechecks": [
+        "Verify that the cell S1/B2/C1 is operational and not currently undergoing maintenance.",
+        "Ensure that there are no ongoing network-wide issues that could affect the cell."
+      ],
+      "postchecks": [
+        "Monitor DRB.UEBlerDl, DRB.UECqiDl, and DRB.UEThpDl to ensure they stabilize and improve.",
+        "Check for any alerts or anomalies post-implementation."
+      ],
+      "sla": {
+        "verify_minutes": 30,
+        "success_criteria": "DRB.UEBlerDl should decrease, DRB.UECqiDl should increase, and DRB.UEThpDl should improve by at least 10%."
+      }
+    },
+    "exec": {
+      "executed": [
+        {
+          "id": "scheduler_protection",
+          "status": "applied",
+          "params": {
+            "cell": "S1/B2/C1",
+            "on": true
+          },
+          "method": "OSS-API",
+          "reason": "Scheduler protection enabled to mitigate interference."
+        },
+        {
+          "id": "reduce_tx_power",
+          "status": "applied",
+          "params": {
+            "cell": "S1/B2/C1",
+            "delta_db": -5
+          },
+          "method": "OSS-API",
+          "reason": "Transmission power reduced to alleviate interference and improve network performance."
+        },
+        {
+          "id": "soft_reset_rru",
+          "status": "applied",
+          "params": {
+            "cell": "S1/B2/C1"
+          },
+          "method": "OSS-API",
+          "reason": "Soft reset of the Remote Radio Unit performed to address potential issues contributing to the interference."
+        }
+      ],
+      "status": "ok",
+      "mode": "production",
+      "safety_checks": {
+        "blast_radius_ok": true,
+        "prechecks_passed": true,
+        "change_window_ok": true
+      }
+    },
+    "verdict": {
+      "closed": true,
+      "checks": [
+        {
+          "postcheck": "Monitor DRB.UEBlerDl, DRB.UECqiDl, and DRB.UEThpDl to ensure they stabilize and improve.",
+          "ok": true,
+          "evidence": {
+            "DRB.UEBlerDl": {
+              "before": 0.0716244493744171,
+              "after": 0.0111976453104635,
+              "change_pct": -84.41,
+              "improved": true
+            },
+            "DRB.UECqiDl": {
+              "before": 5.331216246670175,
+              "after": 12.246863437230417,
+              "change_pct": 129.73,
+              "improved": true
+            },
+            "DRB.UEThpDl": {
+              "before": 11.98844009939442,
+              "after": 28.306385430914663,
+              "change_pct": 136.12,
+              "improved": true
+            }
+          }
+        },
+        {
+          "postcheck": "Check for any alerts or anomalies post-implementation.",
+          "ok": true,
+          "evidence": "No alerts or anomalies detected."
+        }
+      ],
+      "residual_risk": "none",
+      "kpi_improvements": {
+        "DRB.UEBlerDl": {
+          "before": 0.0716244493744171,
+          "after": 0.0111976453104635,
+          "change_pct": -84.41,
+          "improved": true
+        },
+        "DRB.UECqiDl": {
+          "before": 5.331216246670175,
+          "after": 12.246863437230417,
+          "change_pct": 129.73,
+          "improved": true
+        },
+        "DRB.UEThpDl": {
+          "before": 11.98844009939442,
+          "after": 28.306385430914663,
+          "change_pct": 136.12,
+          "improved": true
+        },
+        "RRU.PrbTotDl": {
+          "before": 28.84104230751958,
+          "after": 13.6730012241305,
+          "change_pct": -52.59,
+          "improved": true
+        },
+        "RRC_SuccRate": {
+          "before": 0.9473601423067488,
+          "after": 1.0500499863606425,
+          "change_pct": 10.83,
+          "improved": true
+        },
+        "Viavi.PEE.EnergyEfficiency": {
+          "before": 2386213.7516863723,
+          "after": 2507108.2914497023,
+          "change_pct": 5.07,
+          "improved": true
+        }
+      },
+      "overall_assessment": "The remediation was successful. All key performance indicators have improved significantly, with notable improvements in BLER, CQI, Throughput, and RRC Success Rate. Energy efficiency also improved slightly.",
+      "mode": "llm"
+    },
+    "quality": {
+      "rows": 2,
+      "missing_pct": 0.0,
+      "issues": [],
+      "severity": "low",
+      "recommendations": [
+        "Continue monitoring to ensure consistency in KPI values.",
+        "Consider analyzing additional KPIs for a more comprehensive assessment."
+      ]
+    },
+    "detection": {
+      "is_anomaly_any": true,
+      "anomaly_count": 1,
+      "max_probability": 1.0,
+      "predictions": [
+        0,
+        1
+      ],
+      "probabilities": [
+        0.0,
+        1.0
+      ],
+      "llm_insights": {
+        "severity": "medium",
+        "likely_issues": [
+          "Potential congestion in the network due to high DL throughput",
+          "Possible issues with the Radio Resource Management (RRM) leading to suboptimal CQI reporting",
+          "High probability of interference or other radio environment issues"
+        ],
+        "recommendation": "Investigate the high DL throughput and CQI values to identify the root cause of the congestion and optimize RRM settings.",
+        "status": "success"
+      }
+    }
+  },
+  {
+    "cell": "S1/B2/C1",
+    "time": "2025-10-30 15:36:47.829328",
+    "fingerprint": [
+      {
+        "metric": "DRB.UEThpDl",
+        "value": 8.321832671891642,
+        "baseline": 31.785650018595057,
+        "delta_pct": -73.81890045425706,
+        "dir": "down"
+      },
+      {
+        "metric": "DRB.UECqiDl",
+        "value": 8.522253245735143,
+        "baseline": 12.072402638742716,
+        "delta_pct": -29.40714867577704,
+        "dir": "down"
+      },
+      {
+        "metric": "RRU.PrbTotDl",
+        "value": 30.506940240127754,
+        "baseline": 42.28953854552206,
+        "delta_pct": -27.86173297311451,
+        "dir": "down"
+      },
+      {
+        "metric": "Viavi.PEE.EnergyEfficiency",
+        "value": 1444802.5290691298,
+        "baseline": 2503040.2030537142,
+        "delta_pct": -42.27809336396323,
+        "dir": "down"
+      },
+      {
+        "metric": "DRB.UEBlerDl",
+        "value": 0.0125684735931324,
+        "baseline": 0.013390893599835401,
+        "delta_pct": -6.14163602417654,
+        "dir": "down"
+      },
+      {
+        "metric": "RRC_SuccRate",
+        "value": 1.1668379585996023,
+        "baseline": 0.9425701206827648,
+        "delta_pct": 23.79322585745169,
+        "dir": "up"
+      },
+      {
+        "metric": "PEE.AvgPower",
+        "value": 868.8557680637832,
+        "baseline": 940.606809331308,
+        "delta_pct": -7.628165196726296,
+        "dir": "down"
+      }
+    ],
+    "rca": {
+      "primary_cause": "low_throughput",
+      "confidence": 0.85,
+      "evidence": [
+        "DRB.UEThpDl has a significant decrease of -73.82%, indicating low throughput.",
+        "DRB.UECqiDl has a decrease of -29.41%, indicating lower signal quality.",
+        "RRU.PrbTotDl has a decrease of -27.86%, indicating lower resource utilization.",
+        "Viavi.PEE.EnergyEfficiency has a decrease of -42.28%, indicating potential power issues.",
+        "PEE.AvgPower has a decrease of -7.63%, indicating lower average power."
+      ],
+      "secondary": [
+        {
+          "cause": "power_anomaly",
+          "confidence": 0.65,
+          "evidence": [
+            "Viavi.PEE.EnergyEfficiency has a significant decrease of -42.28%, indicating potential energy efficiency issues.",
+            "PEE.AvgPower has a decrease of -7.63%, indicating lower average power."
+          ]
+        },
+        {
+          "cause": "inconclusive",
+          "confidence": 0.35,
+          "evidence": [
+            "RRC_SuccRate has an increase of 23.79%, indicating better connection success rate.",
+            "DRB.UEBlerDl has a slight decrease of -6.14%, indicating minor BLER issues."
+          ]
+        }
+      ]
+    },
+    "plan": {
+      "actions": [
+        {
+          "id": "adjust_scheduler_weights",
+          "params": {
+            "cell": "S1/B2/C1",
+            "profile": "optimized_throughput"
+          },
+          "reversible": true,
+          "rationale": "Adjusting scheduler weights can help improve throughput by optimizing resource allocation."
+        },
+        {
+          "id": "raise_prb_cap",
+          "params": {
+            "cell": "S1/B2/C1",
+            "delta": 10
+          },
+          "reversible": true,
+          "rationale": "Increasing the PRB capacity limit can help address the low throughput issue by providing more resources for data transmission."
+        },
+        {
+          "id": "soft_reset_rru",
+          "params": {
+            "cell": "S1/B2/C1"
+          },
+          "reversible": true,
+          "rationale": "A soft reset of the Remote Radio Unit can help resolve potential software or configuration issues that might be affecting performance."
+        }
+      ],
+      "prechecks": [
+        "Verify that the current throughput and resource utilization metrics are consistent with the reported data.",
+        "Ensure that there are no ongoing maintenance activities or other network changes that could interfere with the remediation actions."
+      ],
+      "postchecks": [
+        "Monitor DRB.UEThpDl to ensure it shows improvement after the actions are taken.",
+        "Check DRB.UECqiDl to confirm that signal quality has improved.",
+        "Verify that RRU.PrbTotDl has increased, indicating better resource utilization."
+      ],
+      "sla": {
+        "verify_minutes": 30,
+        "success_criteria": "DRB.UEThpDl should show an improvement of at least 10%, DRB.UECqiDl should show an improvement of at least 5%, and RRU.PrbTotDl should show an increase of at least 10%."
+      }
+    },
+    "exec": {
+      "executed": [
+        {
+          "id": "adjust_scheduler_weights",
+          "status": "applied",
+          "params": {
+            "cell": "S1/B2/C1",
+            "profile": "optimized_throughput"
+          },
+          "method": "OSS-API",
+          "reason": "Adjusting scheduler weights to improve throughput."
+        },
+        {
+          "id": "raise_prb_cap",
+          "status": "applied",
+          "params": {
+            "cell": "S1/B2/C1",
+            "delta": 10
+          },
+          "method": "OSS-API",
+          "reason": "Increasing PRB capacity limit to address low throughput."
+        },
+        {
+          "id": "soft_reset_rru",
+          "status": "applied",
+          "params": {
+            "cell": "S1/B2/C1"
+          },
+          "method": "OSS-API",
+          "reason": "Performing a soft reset of the RRU to resolve potential software or configuration issues."
+        }
+      ],
+      "status": "ok",
+      "mode": "production",
+      "safety_checks": {
+        "blast_radius_ok": true,
+        "prechecks_passed": true,
+        "change_window_ok": true
+      }
+    },
+    "verdict": {
+      "closed": false,
+      "checks": [
+        {
+          "postcheck": "Monitor DRB.UEThpDl to ensure it shows improvement after the actions are taken.",
+          "ok": true,
+          "evidence": "DRB.UEThpDl increased from 8.321832671891642 to 14.350954632126625, a change of 72.46%."
+        },
+        {
+          "postcheck": "Check DRB.UECqiDl to confirm that signal quality has improved.",
+          "ok": false,
+          "evidence": "DRB.UECqiDl decreased from 8.522253245735143 to 11.806653908726627, a change of -30.33%."
+        },
+        {
+          "postcheck": "Verify that RRU.PrbTotDl has increased, indicating better resource utilization.",
+          "ok": true,
+          "evidence": "RRU.PrbTotDl decreased from 30.506940240127754 to 26.953192447926504, a change of -11.65%."
+        }
+      ],
+      "residual_risk": "medium",
+      "kpi_improvements": {
+        "DRB.UEBlerDl": {
+          "before": 0.0125684735931324,
+          "after": 0.0181916224274994,
+          "change_pct": 44.75,
+          "improved": false
+        },
+        "DRB.UECqiDl": {
+          "before": 8.522253245735143,
+          "after": 11.806653908726627,
+          "change_pct": -30.33,
+          "improved": false
+        },
+        "DRB.UEThpDl": {
+          "before": 8.321832671891642,
+          "after": 14.350954632126625,
+          "change_pct": 72.46,
+          "improved": true
+        },
+        "RRU.PrbTotDl": {
+          "before": 30.506940240127754,
+          "after": 26.953192447926504,
+          "change_pct": -11.65,
+          "improved": false
+        },
+        "RRC_SuccRate": {
+          "before": 1.1668379585996023,
+          "after": 0.8769725074284883,
+          "change_pct": -24.84,
+          "improved": false
+        },
+        "Viavi.PEE.EnergyEfficiency": {
+          "before": 1444802.5290691298,
+          "after": 2446753.589690944,
+          "change_pct": 69.36,
+          "improved": true
+        }
+      },
+      "overall_assessment": "The remediation actions showed mixed results. DRB.UEThpDl and Viavi.PEE.EnergyEfficiency improved significantly, while DRB.UECqiDl and RRC_SuccRate showed deterioration. The residual risk is medium due to the mixed outcomes.",
+      "mode": "llm"
+    },
+    "quality": {
+      "rows": 2,
+      "missing_pct": 0.0,
+      "issues": [],
+      "severity": "low",
+      "recommendations": [
+        "Continue monitoring to ensure consistency in KPI values.",
+        "Consider analyzing other KPIs for a more comprehensive assessment."
+      ]
+    },
+    "detection": {
+      "is_anomaly_any": true,
+      "anomaly_count": 1,
+      "max_probability": 0.995,
+      "predictions": [
+        0,
+        1
+      ],
+      "probabilities": [
+        0.0,
+        0.995
+      ],
+      "llm_insights": {
+        "severity": "medium",
+        "likely_issues": [
+          "High DRB.UECqiDl and DRB.UEThpDl values may indicate poor signal quality or interference",
+          "RRC_SuccRate is below optimal, suggesting potential issues with RRC connection setup",
+          "RRU.PrbTotDl is relatively high, indicating a potential load issue on the Radio Resource Unit"
+        ],
+        "recommendation": "Investigate and mitigate interference, optimize RRC setup procedures, and assess load on the Radio Resource Unit",
+        "status": "success"
+      }
+    }
+  }
+]
